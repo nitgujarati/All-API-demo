@@ -1,19 +1,36 @@
 import React, { useEffect, useState } from 'react';
 import Loader from './Loader';
 import '../App.css'
+import { useNavigate } from 'react-router-dom';
 const App = () => {
+    const navigate = useNavigate();
     const [allData, setAllData] = useState([]);
     const [name, setName] = useState('');
     const [age, setAge] = useState('');
     const [hobby, setHobby] = useState('');
-
     const [isEdit, setIsEdit] = useState(false);
     const [id, setId] = useState('');
     const [loader, setLoader] = useState('');
 
+    const LoguotButton = () => {
+        localStorage.clear();
+        navigate('/register')
+    }
+
+    useEffect(() => {
+        const Routing = localStorage.getItem('user')
+        if (Routing) {
+            navigate("/singup")
+        }
+    }, [navigate])
+
     const getAllData = async () => {
         setLoader(<Loader />);
-        await fetch('http://localhost:1024/list')
+        await fetch('http://localhost:1024/list', {
+            headers: {
+                authorization: `bearer ${JSON.parse(localStorage.getItem("token"))}`
+            }
+        })
             .then(res => res.json())
             .then(dat => {
                 setAllData(dat);
@@ -35,7 +52,10 @@ const App = () => {
             const data = { name, age, hobby };
             await fetch('http://localhost:1024/create', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    authorization: `bearer ${JSON.parse(localStorage.getItem("token"))}`
+                },
                 body: JSON.stringify({ ...data })
             })
                 .then(res => res.json())
@@ -55,7 +75,10 @@ const App = () => {
         setLoader(<Loader />);
         await fetch(`http://localhost:1024/delete/${id_d}`, {
             method: 'DELETE',
-            headers: { 'Content-Type': 'application/json' }
+            headers: {
+                'Content-Type': 'application/json',
+                authorization: `bearer ${JSON.parse(localStorage.getItem("token"))}`
+            }
         })
             .then(res => res)
             .then(data => {
@@ -69,7 +92,10 @@ const App = () => {
         setLoader(<Loader />);
         await fetch(`http://localhost:1024/list/${id_e}`, {
             method: 'GET',
-            headers: { 'Content-Type': 'application/json' }
+            headers: {
+                'Content-Type': 'application/json',
+                authorization: `bearer ${JSON.parse(localStorage.getItem("token"))}`
+            }
         })
             .then(res => res.json())
             .then(data => {
@@ -88,7 +114,10 @@ const App = () => {
         const data = { name, age, hobby };
         await fetch(`http://localhost:1024/update/${id}`, {
             method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                authorization: `bearer ${JSON.parse(localStorage.getItem("token"))}`
+            },
             body: JSON.stringify({ ...data })
         })
             .then(res => res)
@@ -123,6 +152,7 @@ const App = () => {
                         :
                         <button onClick={ saveData }>Save</button>
                 }
+                <button onClick={ LoguotButton }>Logout</button>
             </div>
 
             <table>

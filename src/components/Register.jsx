@@ -1,5 +1,5 @@
-// Register.js
-import React, { useState } from 'react';
+
+import React, { useEffect, useState } from 'react';
 import './Register.css';
 import { useNavigate } from 'react-router-dom';
 
@@ -8,6 +8,17 @@ const Register = () => {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+
+    useEffect(() => {
+        const Routing = localStorage.getItem("user")
+        if (Routing) {
+            Route('/singup')
+        }
+        else {
+            Route('/register')
+        }
+    }, [Route])
+
 
     const SignUpButton = async () => {
         if (name === "" || email === "" || password === "") {
@@ -25,7 +36,7 @@ const Register = () => {
             localStorage.setItem("user", JSON.stringify(result.result));
             localStorage.setItem("token", JSON.stringify(result.auth));
             console.log(result);
-            Route("/");
+            Route("/singup");
         }
     };
     return (
