@@ -2,9 +2,14 @@ import React, { useEffect, useState } from 'react';
 import Loader from './Loader';
 import '../App.css'
 import { useNavigate } from 'react-router-dom';
+
+
 const App = () => {
     const navigate = useNavigate();
+
+
     const [allData, setAllData] = useState([]);
+    console.log(allData)
     const [name, setName] = useState('');
     const [age, setAge] = useState('');
     const [hobby, setHobby] = useState('');
@@ -12,28 +17,34 @@ const App = () => {
     const [id, setId] = useState('');
     const [loader, setLoader] = useState('');
 
-    const LoguotButton = () => {
-        localStorage.clear();
-        navigate('/register')
-    }
 
+    const logoutButton = () => {
+        localStorage.clear();
+        navigate('/')
+    }
     useEffect(() => {
         const Routing = localStorage.getItem('user')
         if (Routing) {
             navigate("/singup")
+        } 
+        else {
+            navigate('/register')
         }
     }, [navigate])
 
     const getAllData = async () => {
         setLoader(<Loader />);
         await fetch('http://localhost:1024/list', {
+            method: "GET",
             headers: {
+                'Content-Type': 'application/json',
                 authorization: `bearer ${JSON.parse(localStorage.getItem("token"))}`
-            }
+            },
         })
             .then(res => res.json())
             .then(dat => {
                 setAllData(dat);
+                console.log(dat);
                 setLoader('');
             })
             .catch(err => console.log(err));
@@ -152,7 +163,8 @@ const App = () => {
                         :
                         <button onClick={ saveData }>Save</button>
                 }
-                <button onClick={ LoguotButton }>Logout</button>
+                <button onClick={ logoutButton }>Logout</button>
+
             </div>
 
             <table>
@@ -166,6 +178,7 @@ const App = () => {
                 </thead>
                 <tbody>
                     {
+
                         allData.map((ele, index) => (
                             <tr key={ index }>
                                 <td>{ ele.name }</td>

@@ -1,4 +1,4 @@
-
+// Login.js
 import React, { useEffect, useState } from 'react';
 import './Login.css';
 import { useNavigate } from 'react-router-dom';
@@ -7,6 +7,8 @@ const Login = () => {
     const Route = useNavigate();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+
+
     useEffect(() => {
         const Routing = localStorage.getItem("user")
         if (Routing) {
@@ -21,8 +23,9 @@ const Login = () => {
         Route("/register");
     }
 
-    const LoginButton = async () => {
 
+
+    const handleLogin = async () => {
         if (email === "" || password === "") {
             alert("Please fill in all fields");
         } else {
@@ -36,15 +39,15 @@ const Login = () => {
             });
             result = await result.json();
             console.log(result);
-            if (result.name) {
-                localStorage.setItem("user", JSON.stringify(result));
+            console.log(result);
+            if (result.user) {
+                localStorage.setItem("user", JSON.stringify(result.user));
+                localStorage.setItem("token", JSON.stringify(result.accessToken));
                 Route("/singup");
-            }
-            else {
-                alert("please enter correct item")
+            } else {
+                alert("Please enter correct credentials");
             }
         }
-
     };
 
     return (
@@ -58,13 +61,15 @@ const Login = () => {
                 <div className="input-container">
                     <input type="password" placeholder="Enter password" value={ password } onChange={ (e) => setPassword(e.target.value) } />
                 </div>
-                <button onClick={ LoginButton } type="button" className="submit">
+                <button onClick={ handleLogin } type="button" className="submit">
                     Login
                 </button>
+
                 <button onClick={ SingButton } type="button" className="submit">
-                    Sign up
+                    singup
                 </button>
             </div>
+
         </div>
     );
 };
